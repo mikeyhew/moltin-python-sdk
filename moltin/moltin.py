@@ -72,17 +72,15 @@ class Moltin:
         self.authenticator = Authenticator(client_id, client_secret, self.request, TokenContainer())
 
     def __getattr__(self, name):
-        obj_name = name.capitalize()
-
-        if obj_name in self.endpoints:
-            e = create_endpoint_object(obj_name, Endpoint)
-            endpoint = e(self.request, self.endpoints[obj_name])
-        elif obj_name in self.custom_endpoints:
-            obj_base, endpoint_name = self.custom_endpoints[obj_name]
+        if name in self.endpoints:
+            e = create_endpoint_object(name, Endpoint)
+            endpoint = e(self.request, self.endpoints[name])
+        elif name in self.custom_endpoints:
+            obj_base, endpoint_name = self.custom_endpoints[name]
             endpoint = curry(obj_base, self.request, endpoint_name)
-        elif obj_name in self.custom_endpoints_without_extra_params:
-            obj_base, endpoint_name = self.custom_endpoints_without_extra_params[obj_name]
-            e = create_endpoint_object(obj_name, obj_base)
+        elif name in self.custom_endpoints_without_extra_params:
+            obj_base, endpoint_name = self.custom_endpoints_without_extra_params[name]
+            e = create_endpoint_object(name, obj_base)
             endpoint = e(self.request, endpoint_name)
         else:
             raise RuntimeError("No such API object: " + name)
